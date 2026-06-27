@@ -113,8 +113,13 @@ if page.startswith("①"):
         tr = tt.groupby("YearMonth", as_index=False).agg(AUM=("AUM_k", "sum"), CO=("Contribution_k", "sum"))
         tr = tr.sort_values("YearMonth")
         fig = make_subplots(specs=[[{"secondary_y": True}]])
-        fig.add_bar(x=tr.YearMonth, y=tr.AUM/1e5, name="AUM(億)", marker_color=RED)
+        fig.add_bar(x=tr.YearMonth, y=tr.AUM/1e5, name="AUM(億)", marker_color=RED,
+                    text=tr.AUM/1e5, texttemplate="%{text:.1f}", textposition="outside",
+                    textfont=dict(size=9, color=MAROON), cliponaxis=False)
         fig.add_trace(go.Scatter(x=tr.YearMonth, y=tr.CO/10, name="貢獻(萬)",
+                                 mode="lines+markers+text", text=(tr.CO/10).round().astype(int),
+                                 texttemplate="%{text}", textposition="top center",
+                                 textfont=dict(size=9, color=GOLD),
                                  line=dict(color=GOLD, width=3)), secondary_y=True)
         fig.update_layout(title="月度 AUM 與貢獻度", height=330,
                           margin=dict(t=40, b=10, l=10, r=10),
@@ -125,6 +130,7 @@ if page.startswith("①"):
         sc.columns = ["Segment", "n"]
         fig = px.pie(sc, names="Segment", values="n", hole=.6,
                      color_discrete_sequence=SEQ, title="客群結構")
+        fig.update_traces(textinfo="percent", textfont_size=12)
         fig.update_layout(height=330, margin=dict(t=40, b=10, l=10, r=10))
         st.plotly_chart(fig, use_container_width=True)
 
@@ -133,14 +139,18 @@ if page.startswith("①"):
         ch = C.Channel.value_counts().reset_index(); ch.columns = ["Channel", "n"]
         fig = px.bar(ch, x="n", y="Channel", orientation="h",
                      color_discrete_sequence=[DARK2], title="往來通路結構")
-        fig.update_layout(height=300, margin=dict(t=40, b=10, l=10, r=10), plot_bgcolor="white")
+        fig.update_traces(texttemplate="%{x:,}", textposition="outside",
+                          cliponaxis=False, textfont_size=11)
+        fig.update_layout(height=300, margin=dict(t=40, b=10, l=40, r=40), plot_bgcolor="white")
         st.plotly_chart(fig, use_container_width=True)
     with c4:
         dfp = pd.DataFrame({"商品": CATS, "滲透率": [C[f].mean()*100 for f in FLAGS]})
         fig = px.bar(dfp, x="滲透率", y="商品", orientation="h",
                      color="商品", color_discrete_sequence=SEQ, title="各商品滲透率")
-        fig.update_layout(height=300, margin=dict(t=40, b=10, l=10, r=10),
-                          showlegend=False, plot_bgcolor="white", xaxis_range=[0, 100])
+        fig.update_traces(texttemplate="%{x:.1f}%", textposition="outside",
+                          cliponaxis=False, textfont_size=11)
+        fig.update_layout(height=300, margin=dict(t=40, b=10, l=10, r=40),
+                          showlegend=False, plot_bgcolor="white", xaxis_range=[0, 112])
         st.plotly_chart(fig, use_container_width=True)
 
 # ================= 頁面 2：跨商品行為 =================
@@ -153,7 +163,9 @@ elif page.startswith("②"):
         dh = C.ProductCount.value_counts().reindex(range(6)).fillna(0).reset_index()
         dh.columns = ["持有商品數", "客戶數"]
         fig = px.bar(dh, x="持有商品數", y="客戶數", title="客戶產品密度分布")
-        fig.update_traces(marker_color=[SAND if v < 2 else RED for v in dh["持有商品數"]])
+        fig.update_traces(marker_color=[SAND if v < 2 else RED for v in dh["持有商品數"]],
+                          texttemplate="%{y:,}", textposition="outside",
+                          cliponaxis=False, textfont_size=11)
         fig.update_layout(height=380, margin=dict(t=40, b=10, l=10, r=10), plot_bgcolor="white")
         st.plotly_chart(fig, use_container_width=True)
     with c2:
@@ -172,8 +184,10 @@ elif page.startswith("②"):
             for s in SEGS for ci in range(5)]
     fig = px.bar(pd.DataFrame(rows), x="客群", y="滲透率", color="商品", barmode="group",
                  color_discrete_sequence=SEQ, title="各客群商品持有率")
+    fig.update_traces(texttemplate="%{y:.0f}", textposition="outside",
+                      cliponaxis=False, textfont_size=8)
     fig.update_layout(height=360, margin=dict(t=40, b=10, l=10, r=10),
-                      plot_bgcolor="white", yaxis_range=[0, 100])
+                      plot_bgcolor="white", yaxis_range=[0, 112])
     st.plotly_chart(fig, use_container_width=True)
 
 # ================= 頁面 3：跨售商機 =================
@@ -213,6 +227,8 @@ else:
         b.columns = ["區間", "客戶數"]
         fig = px.bar(b, x="區間", y="客戶數", color="區間", title="白地客戶傾向分數分布",
                      color_discrete_sequence=[SAND, SOFT, GOLD, RED, MAROON])
+        fig.update_traces(texttemplate="%{y:,}", textposition="outside",
+                          cliponaxis=False, textfont_size=11)
         fig.update_layout(height=340, margin=dict(t=40, b=10, l=10, r=10), showlegend=False, plot_bgcolor="white")
         st.plotly_chart(fig, use_container_width=True)
     with c2:
