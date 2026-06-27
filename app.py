@@ -42,6 +42,35 @@ hr {{ border-color:#ECD8D2; }}
 </style>
 """, unsafe_allow_html=True)
 
+# ---------------- 密碼保護 ----------------
+def check_password():
+    """顯示密碼輸入框；正確才回傳 True。密碼存在 Streamlit Secrets 的 app_password。"""
+    if st.session_state.get("auth_ok"):
+        return True
+
+    def _verify():
+        try:
+            real = st.secrets["app_password"]
+        except Exception:
+            st.session_state["auth_ok"] = True   # 未設定密碼時不阻擋（方便本機測試）
+            return
+        if st.session_state.get("pw_input", "") == real:
+            st.session_state["auth_ok"] = True
+            st.session_state["pw_input"] = ""
+        else:
+            st.session_state["auth_ok"] = False
+
+    st.markdown(f"<h2 style='color:{MAROON}'>🔒 永豐顧客跨商品儀表板</h2>", unsafe_allow_html=True)
+    st.text_input("請輸入存取密碼", type="password", key="pw_input", on_change=_verify)
+    if st.session_state.get("auth_ok") is False:
+        st.error("密碼錯誤，請再試一次。")
+    st.caption("此儀表板僅供授權對象檢視。")
+    return False
+
+
+if not check_password():
+    st.stop()
+
 # ---------------- 載入資料 ----------------
 @st.cache_data
 def load(data_dir="."):
