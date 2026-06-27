@@ -24,4 +24,4 @@ DimCustomer.csv ‧ DimProduct.csv ‧ DimDate.csv ‧ FactHoldings.csv ‧ Fact
 
 ## 想分享給別人看？
 可免費部署到 Streamlit Community Cloud（share.streamlit.io）：把這個資料夾推到 GitHub，
-在平台選 app.py 即可得到一個公開網址，面試時直接傳連結展示。
+在平台選 app.py 即可得到一個公開網址。
