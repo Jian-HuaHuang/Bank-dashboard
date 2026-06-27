@@ -193,7 +193,7 @@ elif page.startswith("②"):
 # ================= 頁面 3：跨售商機 =================
 else:
     st.title("跨售商機")
-    st.caption(f"目前客群：{seg_sel}　｜　鎖定白地客戶，量化跨售與向上銷售潛力")
+    st.caption(f"目前客群：{seg_sel}　｜　鎖定潛在客戶，量化跨售與向上銷售潛力")
 
     t_name = st.radio("推廣目標商品", CATS, index=3, horizontal=True)
     t = CATS.index(t_name)
@@ -215,9 +215,9 @@ else:
     pot = hi * uplift / 10
 
     k = st.columns(4)
-    k[0].metric(f"白地客戶（無{t_name}）", f"{len(ws):,}")
-    k[1].metric("高傾向客戶（≥60）", f"{hi:,}")
-    k[2].metric("白地占比", pct(100*len(ws)/n if n else 0))
+    k[0].metric(f"潛在客戶（未持有{t_name}）", f"{len(ws):,}")
+    k[1].metric("優先推薦客戶（分數≥60）", f"{hi:,}")
+    k[2].metric("潛在客戶占比", pct(100*len(ws)/n if n else 0))
     k[3].metric("估計年貢獻潛力", f"{pot:,.0f} 萬")
 
     c1, c2 = st.columns(2)
@@ -225,7 +225,7 @@ else:
         b = pd.cut(ws.score, [0, 20, 40, 60, 80, 100],
                    labels=["0-20", "20-40", "40-60", "60-80", "80-100"]).value_counts().sort_index().reset_index()
         b.columns = ["區間", "客戶數"]
-        fig = px.bar(b, x="區間", y="客戶數", color="區間", title="白地客戶傾向分數分布",
+        fig = px.bar(b, x="區間", y="客戶數", color="區間", title="潛在客戶傾向分數分布",
                      color_discrete_sequence=[SAND, SOFT, GOLD, RED, MAROON])
         fig.update_traces(texttemplate="%{y:,}", textposition="outside",
                           cliponaxis=False, textfont_size=11)
@@ -239,11 +239,11 @@ else:
                 gap[r, cc] = 0 if r == cc else int((base[FLAGS[cc]] == 0).sum())
         fig = px.imshow(gap, x=CATS, y=CATS, color_continuous_scale=HEAT,
                         text_auto=".0f", aspect="auto",
-                        title="跨售白地缺口（有列、缺欄的客戶數）")
+                        title="跨售缺口（持有列、未持有欄的客戶數）")
         fig.update_layout(height=340, margin=dict(t=40, b=10, l=10, r=10), coloraxis_showscale=False)
         st.plotly_chart(fig, use_container_width=True)
 
-    st.subheader("重點跨售名單（依傾向分數排序，取前 40）")
+    st.subheader("優先推薦名單（依傾向分數由高到低，取前 40）")
     top = ws.sort_values("score", ascending=False).head(40).copy()
     top["建議商品"] = t_name
     show = top[["CustomerID", "Segment", "Age", "TenureYears", "AUM_萬",
