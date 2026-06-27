@@ -1,5 +1,5 @@
 """
-永豐顧客跨商品分析儀表板 — Streamlit 版
+銀行顧客跨商品分析儀表板 — Streamlit 版
 執行方式：
     pip install streamlit plotly pandas
     streamlit run app.py
