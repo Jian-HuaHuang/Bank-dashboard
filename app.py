@@ -56,7 +56,7 @@ def check_password():
             return
         st.session_state["auth_ok"] = (st.session_state.get("pw_input", "") == real)
 
-    st.markdown(f"<h2 style='color:{MAROON}'>🔒 永豐顧客跨商品儀表板</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:{MAROON}'>🔒 顧客跨商品儀表板</h2>", unsafe_allow_html=True)
     st.text_input("請輸入存取密碼", type="password", key="pw_input", on_change=_verify)
     if st.session_state.get("auth_ok") is False:
         st.error("密碼錯誤，請再試一次。")
