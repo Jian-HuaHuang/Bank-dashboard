@@ -1,27 +1,46 @@
-# 銀行顧客跨商品儀表板 — Streamlit 版
+# 永豐顧客跨商品儀表板 — 三層資料流架構
 
-用純 Python（Streamlit + Plotly）重現互動式儀表板，三頁：經營總覽 / 跨商品行為 / 跨售商機，
-左側可篩選客群並即時連動全部圖表。
+原始資料 → 模型＋整理程式 → 整理好的資料 → 儀表板。職責分層清楚，正是業界 pipeline 做法。
 
-## 執行方式
-1. 安裝套件（只需一次）：
+```
+第一層  原始資料（訓練輸入）
+        DimCustomer / DimProduct / DimDate / FactHoldings / FactMonthlyValue（5 個 CSV）
+                 │
+第二層  build_dataset.py  ─ 訓練財管傾向模型 + 評分 + 整理所有衍生欄位
+                 │           輸出 ▼
+        dashboard_data.csv（客戶明細主檔，含 ML 分數）
+        dashboard_trend.csv（月度趨勢）
+                 │
+第三層  app.py（Streamlit）─ 只讀上面兩份檔，負責畫圖與客群篩選
+```
+
+## 怎麼跑（本機）
+1. 產生整理檔（只在資料或模型更新時跑一次）：
+   ```
+   pip install -r requirements-train.txt
+   python build_dataset.py
+   ```
+2. 啟動儀表板：
    ```
    pip install -r requirements.txt
-   ```
-2. 在本資料夾（含 5 個 CSV 與 app.py）執行：
-   ```
    streamlit run app.py
    ```
-3. 瀏覽器會自動開啟 http://localhost:8501
 
-## 需要的檔案（已附）
-DimCustomer.csv ‧ DimProduct.csv ‧ DimDate.csv ‧ FactHoldings.csv ‧ FactMonthlyValue.csv
-（app.py 會自動讀取與它同資料夾的這 5 個檔）
+## 部署到 Streamlit Cloud
+- 只要 repo 內含 `app.py`、`dashboard_data.csv`、`dashboard_trend.csv`、`requirements.txt` 即可運作；
+  **雲端不需要 scikit-learn**（分數已預先算好寫入 CSV）。
+- 原始 5 個 CSV 與 `build_dataset.py` 放著做「可重現的 pipeline」佐證即可，部署用不到。
+
+## 模型說明（面試可講）
+- 目標：預測客戶是否持有財富管理（Has_Wealth）；對未持有者輸出傾向機率＝跨售分數。
+- 特徵：客群、收入、年齡、年資、活躍度、其他商品持有、信用卡消費、放款餘額。
+- 刻意排除資料洩漏欄位：TotalAUM_k、AnnualContribution_k、ProductCount。
+- 表現：ROC-AUC ≈ 0.83（5 折交叉驗證 0.84）；採用 Logistic Regression（可解釋）。
+
+## 設密碼（可選）
+app.py 內建密碼關卡：到 Streamlit Cloud 的 Settings → Secrets 填
+`app_password = "你的密碼"` 即生效；本機未設密碼時自動放行。
 
 ## 換成真實資料
-保持欄位名稱不變，把 DimCustomer / FactHoldings / FactMonthlyValue 換成你的資料即可，程式不用改。
-傾向分數（WealthPropensity）實務上以歷史成交資料訓練分類模型後寫回客戶表。
-
-## 想分享給別人看？
-可免費部署到 Streamlit Community Cloud（share.streamlit.io）：把這個資料夾推到 GitHub，
-在平台選 app.py 即可得到一個公開網址。
+保持欄位名稱不變，把第一層的原始 CSV 換成行內資料，重跑 build_dataset.py 即可，
+app.py 完全不用改。真實場景下傾向分數應以歷史成交資料訓練模型。
