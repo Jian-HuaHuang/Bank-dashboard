@@ -19,9 +19,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-st.set_page_config(page_title="銀行顧客跨商品儀表板", page_icon="🟥", layout="wide")
+st.set_page_config(page_title="永豐顧客跨商品儀表板", page_icon="🟥", layout="wide")
 
-MAROON, RED, GOLDs = "#5C1A14", "#C4392C", "#C0982F"
+MAROON, RED, GOLD = "#5C1A14", "#C4392C", "#C0982F"
 SOFT, DARK2, SAND, CREAM = "#E07A5F", "#7A2018", "#E8C9A0", "#F2DEB0"
 INK, BG, MUTED = "#2B1714", "#F6EDE9", "#8C7068"
 SEQ = [RED, MAROON, GOLD, SOFT, DARK2]
@@ -56,7 +56,7 @@ def check_password():
             return
         st.session_state["auth_ok"] = (st.session_state.get("pw_input", "") == real)
 
-    st.markdown(f"<h2 style='color:{MAROON}'>🔒 銀行顧客跨商品儀表板</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:{MAROON}'>🔒 永豐顧客跨商品儀表板</h2>", unsafe_allow_html=True)
     st.text_input("請輸入存取密碼", type="password", key="pw_input", on_change=_verify)
     if st.session_state.get("auth_ok") is False:
         st.error("密碼錯誤，請再試一次。")
@@ -83,7 +83,7 @@ except Exception as e:
 
 # ---------------- 側邊欄 ----------------
 with st.sidebar:
-    st.markdown('<div class="brand">🟥 <b>銀行銀行</b><br><span>顧客跨商品儀表板</span></div>',
+    st.markdown('<div class="brand">🟥 <b>永豐銀行</b><br><span>顧客跨商品儀表板</span></div>',
                 unsafe_allow_html=True)
     st.markdown("---")
     page = st.radio("分析頁面", ["① 經營總覽", "② 跨商品行為", "③ 跨售商機"])
