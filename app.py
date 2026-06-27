@@ -15,7 +15,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # ---------------- 設定與配色 ----------------
-st.set_page_config(page_title="永豐顧客跨商品儀表板", page_icon="🟥", layout="wide")
+st.set_page_config(page_title="銀行顧客跨商品儀表板", page_icon="🟥", layout="wide")
 
 MAROON, RED, GOLD = "#5C1A14", "#C4392C", "#C0982F"
 SOFT, DARK2, SAND, CREAM = "#E07A5F", "#7A2018", "#E8C9A0", "#F2DEB0"
