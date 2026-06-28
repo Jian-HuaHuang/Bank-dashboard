@@ -1,0 +1,5 @@
+﻿商品,模型,test_auc,cv_auc,排除洩漏欄位
+信用卡,LogReg,0.591,0.617,CardMonthlySpend_k
+放款,LogReg,0.536,0.559,LoanBalance_k
+財富管理,LogReg,0.826,0.84,TotalAUM_k
+保險,LogReg,0.614,0.617,（無專屬金額欄）
